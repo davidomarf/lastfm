@@ -63,20 +63,28 @@ class TimeSeries extends React.Component {
     this.numberOfColorTags = 4;
 
     // Update using the maximum value in freqArray
-    this.mostScrobblesInAWeek = d3.max(freqArray, (d) => d.value);
+    this.mostScrobblesInAWeek = d3.max(freqArray, (d) => d.value.scrobbles);
 
     for (let i = 0; i < freqArray.length; i++) {
+      let favoriteArtist = "";
+      let artists = d3.entries(freqArray[`${i}`].value.artists);
+      let artists_i = d3.scan(artists, (a, b) => b.value - a.value);
+      if (artists.length !== 0) {
+        favoriteArtist = artists[artists_i].key;
+      }
+
       d3.select("#" + freqArray[`${i}`].key)
         .attr(
           "curve-y",
-          -(freqArray[`${i}`].value / this.mostScrobblesInAWeek) * 60
+          -(freqArray[`${i}`].value.scrobbles / this.mostScrobblesInAWeek) * 60
         )
-        .attr("scrobbles", freqArray[`${i}`].value)
+        .attr("scrobbles", freqArray[`${i}`].value.scrobbles)
+        .attr("artist", favoriteArtist)
         .transition()
         .duration(2000)
         .attr(
           "cy",
-          -(freqArray[`${i}`].value / this.mostScrobblesInAWeek) * 60
+          -(freqArray[`${i}`].value.scrobbles / this.mostScrobblesInAWeek) * 60
         );
       d3.select("#ts-curve")
         .transition()
@@ -100,16 +108,18 @@ class TimeSeries extends React.Component {
       .attr("stroke", "#4e5467")
       .attr("stroke-width", 0.5)
       .attr("fill", "none");
+
     let monthShift = 0;
+
     for (let i = 0; i < dates.length; i++) {
       let id = utils.getIDFromDate(dates[`${i}`], "ts");
-      this.frequencyList[`${id}`] = 0;
+      this.frequencyList[`${id}`] = { scrobbles: 0, artists: {} };
       if (dates[`${i}`].getDate() <= 7) {
         monthShift += 5;
       }
       svg
         .append("circle")
-        .attr("cx", 22 + monthShift+ i * 10)
+        .attr("cx", 22 + monthShift + i * 10)
         .attr("curve-y", 0)
         .attr("cy", 0)
         .attr("r", 1)
@@ -117,21 +127,14 @@ class TimeSeries extends React.Component {
         .attr("id", id)
         // The attributes 'date' and 'scrobbles' are used to get the content
         // of the tooltip when hovering on a cell
-        .attr("date", utils.formatDate(dates[`${i}`]))
+        .attr("date", utils.formatWeekFromDate(dates[`${i}`]))
         .attr("scrobbles", 0)
+        .attr("artist", undefined)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
     }
   }
-
-  /**
-   * React function to run when the component updates
-   *
-   * It's expected that the component will be updated every time UserPage
-   * fetches one more page of the scrobbles list.
-   */
-  componentDidUpdate() {}
 
   /**
    * React function to run when the component has been mounted
@@ -172,19 +175,30 @@ class TimeSeries extends React.Component {
           .map((e) => {
             let weekMonday = new Date(1000 * Math.ceil(Number(e.date.uts)));
             weekMonday.setDate(weekMonday.getDate() - weekMonday.getDay());
-            return utils.getIDFromDate(weekMonday, "ts");
+            return {
+              id: utils.getIDFromDate(weekMonday, "ts"),
+              artist: e.artist["#text"]
+            };
           })
-          .filter((e) => this.frequencyList[`${e}`] !== undefined)
+          .filter((e) => this.frequencyList[`${e.id}`] !== undefined)
       )
     );
 
     // This counts the number of times that a given id appears in the
     // current list of ids
     for (let i = 0; i < idList.length; i++) {
-      let id = idList[`${i}`];
+      let id = idList[`${i}`].id;
+      let artist = idList[`${i}`].artist;
+
       // If this.frequencyList.id is defined, increment its value
       if (this.frequencyList[`${id}`] !== undefined) {
-        this.frequencyList[`${id}`]++;
+        this.frequencyList[`${id}`].scrobbles++;
+
+        if (this.frequencyList[`${id}`].artists[`${artist}`] === undefined) {
+          this.frequencyList[`${id}`].artists[`${artist}`] = 1;
+        } else {
+          this.frequencyList[`${id}`].artists[`${artist}`]++;
+        }
       }
     }
 
@@ -222,7 +236,11 @@ let mousemove = function(d) {
   let week = d3.select(this);
   tooltip_text
     .style("fill", "white")
-    .text(`${week.attr("scrobbles")} scrobbles on ${week.attr("date")}`)
+    .text(
+      `${week.attr("scrobbles")} scrobbles on ${week.attr(
+        "date"
+      )}. Favorite artist: ${week.attr("artist")}`
+    )
     .attr("class", styles["meta-text"])
     .attr(
       "x",

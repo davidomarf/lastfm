@@ -3,7 +3,7 @@
  *
  * @file    This file defines helping functions for the visualization components.
  * @author  davidomarf
- * @since   v2.0.0
+ * @since   v1.0.0
  */
 
 // Used to render the month's name without calling Date.toLocaleDateString()
@@ -74,4 +74,21 @@ export function getDateArray(start, end, step = 1) {
 export function getIDFromDate(date, prefix = "id") {
   return `${prefix}-${date.getFullYear()}-${date.getMonth() +
     1}-${date.getDate()}`;
+}
+
+/**
+ * Formats a Date in a readable String.
+ *
+ * The format is Month dd, YYYY.
+ *
+ * @param {Object} date  Date to be formatted
+ * @returns {string}     Date to string in format Month dd, YYYY
+ */
+export function formatWeekFromDate(sunday) {
+  let saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
+  return `${months[sunday.getMonth()]} ${sunday.getDate()} — ${
+    // If the month is the same for sunday an saturday, don't print the month
+    saturday.getMonth() !== sunday.getMonth() ? months[saturday.getMonth()] : ""
+  } ${saturday.getDate()}`;
 }
