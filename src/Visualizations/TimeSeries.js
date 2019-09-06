@@ -62,8 +62,13 @@ class TimeSeries extends React.Component {
     let freqArray = d3.entries(this.frequencyList);
     this.numberOfColorTags = 4;
 
-    // Update using the maximum value in freqArray
-    this.mostScrobblesInAWeek = d3.max(freqArray, (d) => d.value.scrobbles);
+    // Get the ID of the most active week
+    let mostActiveWeek = Object.keys(this.frequencyList).reduce((a, b) =>
+      this.frequencyList[a].scrobbles > this.frequencyList[b].scrobbles ? a : b
+    );
+
+    // Use the number of scrobbles in the most active week.
+    this.mostScrobblesInAWeek = this.frequencyList[mostActiveWeek].scrobbles;
 
     for (let i = 0; i < freqArray.length; i++) {
       let favoriteArtist = "";
@@ -113,7 +118,10 @@ class TimeSeries extends React.Component {
 
     for (let i = 0; i < dates.length; i++) {
       let id = utils.getIDFromDate(dates[`${i}`], "ts");
-      this.frequencyList[`${id}`] = { scrobbles: 0, artists: {} };
+      this.frequencyList[`${id}`] = {
+        scrobbles: 0,
+        artists: {}
+      };
       if (dates[`${i}`].getDate() <= 7) {
         monthShift += 5;
       }
@@ -129,10 +137,7 @@ class TimeSeries extends React.Component {
         // of the tooltip when hovering on a cell
         .attr("date", utils.formatWeekFromDate(dates[`${i}`]))
         .attr("scrobbles", 0)
-        .attr("artist", undefined)
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+        .attr("artist", undefined);
     }
   }
 
@@ -151,7 +156,8 @@ class TimeSeries extends React.Component {
       // @see https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio
       // @see https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox
       .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", "-20 -119 640 120");
+      .attr("viewBox", "-20 -119 640 120")
+      .attr("id", "d3-section-Timeseries-SVG")
     // .attr("viewBox", "-20 -250 560 270");
 
     // // Draw the Heatmap structure: Legend, texts, and cells
@@ -204,6 +210,7 @@ class TimeSeries extends React.Component {
 
     // Update the values considering the new added scrobbles
     this.updateHeatmapValues();
+    svg.on("mousemove", () => mousemoved(svg, this.frequencyList));
   }
 
   render() {
@@ -225,49 +232,58 @@ class TimeSeries extends React.Component {
 let tooltip;
 let tooltip_text;
 
-// Rules to modify the tooltip the mouse is over
-let mouseover = function(d) {
+function mousemoved(svg, freqlist) {
+  let mousePosition = d3.mouse(svg.node());
+  console.log(freqlist)
+  let closestX = 10 * Math.round(mousePosition[0]/10);
   tooltip.style("opacity", 0.9);
   tooltip_text.style("opacity", 1);
-};
+  tooltip.attr("width", 10).attr("height", 15).attr("x", closestX).attr("y", -120)
+}
 
-// Rules to modify the tooltip when the mouse moves within it
-let mousemove = function(d) {
-  let week = d3.select(this);
-  tooltip_text
-    .style("fill", "white")
-    .text(
-      `${week.attr("scrobbles")} scrobbles on ${week.attr(
-        "date"
-      )}. Favorite artist: ${week.attr("artist")}`
-    )
-    .attr("class", styles["meta-text"])
-    .attr(
-      "x",
-      d3.mouse(this)[0] +
-        (d3.mouse(this)[0] > 410
-          ? -(tooltip_text.node().getBBox().width + 15)
-          : 15)
-    )
-    .attr("y", d3.mouse(this)[1]);
-  tooltip
-    .attr("width", tooltip_text.node().getBBox().width + 10)
-    .attr("height", 15)
-    .attr(
-      "x",
-      d3.mouse(this)[0] +
-        (d3.mouse(this)[0] > 410
-          ? -(tooltip_text.node().getBBox().width + 20)
-          : 10)
-    )
-    .attr("y", d3.mouse(this)[1] - 10);
-};
+// // Rules to modify the tooltip the mouse is over
+// let mouseover = function(d) {
+//   tooltip.style("opacity", 0.9);
+//   tooltip_text.style("opacity", 1);
+// };
 
-// Rules to modify the tooltip when the mouse leaves it
-let mouseleave = function(d) {
-  tooltip.style("opacity", 0);
-  tooltip_text.text("");
-};
+// // Rules to modify the tooltip when the mouse moves within it
+// let mousemove = function(d) {
+//   let week = d3.select(this);
+//   tooltip_text
+//     .style("fill", "white")
+//     .text(
+//       `${week.attr("scrobbles")} scrobbles on ${week.attr(
+//         "date"
+//       )}. Favorite artist: ${week.attr("artist")}`
+//     )
+//     .attr("class", styles["meta-text"])
+//     .attr(
+//       "x",
+//       d3.mouse(this)[0] +
+//         (d3.mouse(this)[0] > 410
+//           ? -(tooltip_text.node().getBBox().width + 15)
+//           : 15)
+//     )
+//     .attr("y", d3.mouse(this)[1]);
+//   tooltip
+//     .attr("width", tooltip_text.node().getBBox().width + 10)
+//     .attr("height", 15)
+//     .attr(
+//       "x",
+//       d3.mouse(this)[0] +
+//         (d3.mouse(this)[0] > 410
+//           ? -(tooltip_text.node().getBBox().width + 20)
+//           : 10)
+//     )
+//     .attr("y", d3.mouse(this)[1] - 10);
+// };
+
+// // Rules to modify the tooltip when the mouse leaves it
+// let mouseleave = function(d) {
+//   tooltip.style("opacity", 0);
+//   tooltip_text.text("");
+// };
 
 /* ---------------------------- Export Component ---------------------------- */
 
