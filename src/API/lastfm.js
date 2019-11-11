@@ -4,7 +4,6 @@ const lastFmAPI = process.env.REACT_APP_LAST_FM_API;
 const lastFmCall =
   "https://ws.audioscrobbler.com/2.0/?format=json&api_key=" + lastFmAPI;
 
-
 async function getData(url) {
   try {
     const response = await axios.get(url);
@@ -28,7 +27,7 @@ function getUserPlayCount(user) {
 
 /**
  * Returns the specified page from the user's scrobble list. Each page has 200 entries.
- * @param {string} user 
+ * @param {string} user
  * @param {number} page Page of the
  * @returns {Promise} Response to the method https://www.last.fm/api/show/user.getRecentTracks
  */

@@ -2,14 +2,19 @@
 
 <div align="center">
   <strong>Visualize all your Last.fm activity in a beautiful and interactive way.</strong>
+
+  ![Travis (.org)](https://img.shields.io/travis/davidomarf/lastfm.svg?style=flat-square)
+  ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/davidomarf/lastfm.svg?style=flat-square)
+  ![Codacy grade](https://img.shields.io/codacy/grade/a4df9a5dc6a44d1c901787988a0fc6c2.svg?style=flat-square)
   <br/>
-  <a href="https://lastfmstats.herokuapp.com/">
-  <i>Try Yours </i>
-  </a>
+  
 </div>
 
 <p align="center">
   <img src="./img/lastfm-screenshot.png" alt="LastfmStats screenshot displaying davidomarf yearly heatmap">
+  <a href="https://lastfmstats.herokuapp.com/">
+  <i>Try Yours </i>
+  </a>
 </p>
 
 
@@ -79,6 +84,10 @@ To contribute with the development you'll need a working copy of the repo in you
   $         # https://github.com/{user}/lastfm.git
   $ cd lastfm
   ```
+
+- [Get an API Key from last.fm](https://www.last.fm/api/account/create)
+
+- Create a `.env` file with this content: `REACT_APP_LAST_FM_API={your-api}`
 
 - Available scripts
 

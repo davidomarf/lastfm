@@ -1,10 +1,10 @@
 import React from "react";
 
-import style from "./Home.module.scss"
-import UserInput from "../Elements/UserInput"
+import style from "./Home.module.scss";
+import UserInput from "../Elements/UserInput";
 
 /**
- * Default page for the App. 
+ * Default page for the App.
  * Renders the form to enter the last.fm username.
  */
 function Home() {

@@ -4,7 +4,6 @@
   "private": true,
   "homepage": "https://davidomarf.github.io/lastfm",
   "dependencies": {
-    "@fullpage/react-fullpage": "^0.1.14",
     "axios": "^0.19.0",
     "d3": "^5.9.2",
     "node-sass": "^4.12.0",

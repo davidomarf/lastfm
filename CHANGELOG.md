@@ -10,6 +10,13 @@ the app functionality.
 
 ## [Unreleased]
 
+## [0.2.0] - 2019-06-04
+### Added
+- Loading page to indicate the progress in retreiving the user scrobbles
+- Time Series component that plots the weekly scrobbles over the last year
+### Changed
+- Stop drawing plots incrementally. Fetch first, plot later.
+
 ## [0.1.3] - 2019-06-29
 ### Fixed
 - Fix the imports in UserPage replacing import with require
@@ -43,7 +50,8 @@ based on the days elapsed since the start of the displayed period.
 - Add community files: templates, contributing, code of conduct.
 - Write a useful Readme
 
-[Unreleased]: https://github.com/davidomarf/lastfm/compare/v0.1.3..HEAD
+[Unreleased]: https://github.com/davidomarf/lastfm/compare/v0.2.0..develop
+[0.2.0]: https://github.com/davidomarf/lastfm/compare/tag/v0.2.0
 [0.1.3]: https://github.com/davidomarf/lastfm/compare/tag/v0.1.3
 [0.1.2]: https://github.com/davidomarf/lastfm/compare/tag/v0.1.2
 [0.1.1]: https://github.com/davidomarf/lastfm/compare/tag/v0.1.1

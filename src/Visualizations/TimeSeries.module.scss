@@ -1,8 +1,8 @@
 .day {
   fill: lighten(#383c4a, 10);
-  stroke-width: 0;
+
   &:hover {
-    stroke-width: 2;
+    stroke: #7c818c;
   }
 }
 
@@ -19,4 +19,13 @@
     text-align: left;
     text-anchor: start;
   }
+}
+
+.week-circle {
+  &:hover {
+    r: 2;
+  }
+  fill: #383c4a;
+  stroke: #e4fd3f;
+  stroke-width: 0.3;
 }
